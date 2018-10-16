@@ -30,6 +30,9 @@ info:	.word	seven
 
 .text
 
+
+
+Inicio:
 	la	$a0, info		# carregando o vetor
 	lw	$t0, length		# carrega o tamanho do vetor
 	sll	$t0, $t0, 2		# shift à esquerda do tamanho do vetor
@@ -113,6 +116,8 @@ mergeloop:
 	jal	Mudar			# move o elemento para a nova posição 
 	
 	addi	$s1, $s1, 4		# incrementa o idice
+
+
 naoMudar:
 	addi	$s0, $s0, 4		# Incrementa o indice 
 	
@@ -120,7 +125,8 @@ naoMudar:
 	bge	$s0, $a2, mergeloopend	# encerra o loop quando as duas metades estao vazias
 	bge	$s1, $a2, mergeloopend	# encerra o loop quando as duas metades estao vazias
 	b	mergeloop
-	
+
+		
 mergeloopend:
 	
 	lw	$ra, 0($sp)		# carrega o endereço de retorno
