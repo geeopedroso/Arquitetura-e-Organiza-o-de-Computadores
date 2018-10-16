@@ -1,41 +1,83 @@
 .data
-eol:	.asciiz	"\n"
+
+		vetor:	.space 40
+		tamanho: 	.word 0x00000000
+
+		str_tamanho: 	.asciiz "digite o tamanho do vetor: "
+		str_digite:	.asciiz "digite o elemento"
+		str_novaLinha:	.asciiz "\n"
+		str_espaco: 	.asciiz ", "
+		
+		
+	.text
+	
+main:
+	jal preencheVetor
+	jal Inicio
+	
+	
+	
+	
+preencheVetor:
+	
+	addi	$sp, $sp, -4
+	sw	$ra, 0($sp)
+	
+	la $t3, vetor	#carrega vetor
+	li $t0, 0	#indice em hexa
+	li $t1, 0	#indice i
+	
+	
+	li $v0, 4		#chamada para escrever no console
+	la $a0, str_tamanho	#carrega a string para imprimir
+	syscall			# executa a chamada do SO para ler
+		
+		
+	li $v0, 4		#chamada para escrever no console
+	la $a0, str_novaLinha	#carrega a string para imprimir
+	syscall			# executa a chamada do SO para ler
+		
+	li $v0, 5		# código para ler um inteiro
+	syscall			# executa a chamada do SO para ler
+	la  $t2, 0($v0)		# carrega o inteiro lido em $t2
+	la  $t6, tamanho
+	sw  $t2, 0($t6)
+	
+carrega:
+
+	beq $t1, $t2, fim
+	add $t4, $t3, $t0
+	
+	li $v0, 4		#chamada para escrever no console
+	la $a0, str_digite		#carrega a string para imprimir
+	syscall			# executa a chamada do SO para ler
+			
+	li $v0, 5
+	syscall
+	sw $v0, 0($t4)
+	
+	addi $t0, $t0, 4
+	addi $t1, $t1, 1
+	
+	j carrega
+		
+fim: 
+	lw	$ra, 0($sp)		# carrega da pilha o endereço de retorno
+	addi	$sp, $sp, 4		# apaga a pilha
+	jr	$ra
 
 
-# Some test data
-eight:	.word	8
-five:	.word	5
-four:	.word	4
-nine:	.word	9
-one:	.word	1
-seven:	.word	7
-six:	.word	6
-#ten:	.word	10
-three:	.word	3
-two:	.word	2
-
-# An array of pointers (indirect array)
-length:	.word	9	# Array length
-info:	.word	seven
-	.word	three
-	#.word	ten
-	.word	one
-	.word	five
-	.word	two
-	.word	nine
-	.word	eight
-	.word	four
-	.word	six
 
 
 .text
 
 
-
+#inicio mergesort
 Inicio:
-	la	$a0, info		# carregando o vetor
-	lw	$t0, length		# carrega o tamanho do vetor
-	sll	$t0, $t0, 2		# shift à esquerda do tamanho do vetor
+	la	$a0, vetor		# carregando o vetor
+	lw 	$t6, tamanho
+	add	$t0, $zero, 0($t6) 		# carrega o tamanho do vetor
+	sll	$t0, $t0, 2		# shift para� esquerda do tamanho do vetor
 	add	$a1, $a0, $t0		# calcula o endereço final do vetor
 	jal	mergesort		# chama a função  merge sort
   	b	Fim			# fim da ordenação
@@ -43,9 +85,9 @@ Inicio:
 
 
 ##
-#      Função recursiva do mergesort 
+#      Funcao recursiva do mergesort 
 #	Parametros
-#      $a0 = primeiro endereço do vetor
+#      $a0 = primeiro endereco do vetor
 #      $a1 = ultimo endereço do vetor
 ##
 
@@ -155,22 +197,22 @@ shiftend:
 Fim:				# ponto para pular quando a ordenação terminar
 
 
-# Print out the indirect array
-	li	$t0, 0				# Initialize the current index
-prloop:
-	lw	$t1,length			# Load the array length
-	bge	$t0,$t1,prdone			# If we hit the end of the array, we are done
-	sll	$t2,$t0,2			# Multiply the index by 4 (2^2)
-	lw	$t3,info($t2)			# Get the pointer
-	lw	$a0,0($t3)			# Get the value pointed to and store it for printing
+# funcao que imprime o vetor
+	li	$t0, 0				# inicializa o index
+printar:
+	lw	$t1, tamanho	# carrega o tamanho do vetor
+	bge	$t0,$t1,final_Print			# verifica se chegou no final do vetor
+	sll	$t2,$t0,2			# acresenta +4 no index hexa
+	lw	$t3,vetor($t2)			# pega o ponteiro do vetor
+	lw	$a0,0($t3)			# pega o valor para printar
 	li	$v0,1				
-	syscall					# Print the value
-	la	$a0,eol				# Set the value to print to the newline
+	syscall					# printa
+	la	$a0,str_espaco				# seta o espa�o
 	li	$v0,4				
 	syscall					# Print the value
 	addi	$t0,$t0,1			# Increment the current index
-	b	prloop				# Run through the print block again
-prdone:						# We are finished
+	b	printar				# Run through the print block again
+final_Print:						# We are finished
 	li	$v0,10
 	syscall
 	

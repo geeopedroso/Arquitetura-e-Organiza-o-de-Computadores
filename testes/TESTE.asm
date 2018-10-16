@@ -1,29 +1,31 @@
 	.data
-	
+		vetor:	.space 40
 
-		str_dgt: 	.asciiz "digite o tamanho do vetor: "
+		str_tamanho: 	.asciiz "digite o tamanho do vetor: "
+		str_digite:	.asciiz "digite o elemento"
 		str_novaLinha:	.asciiz "\n"
 		
-		vetor:	.space 40
+		
 		
 	.text
 	
+main:
+	jal preencheVetor
+	j	fimm
 	
-	
-
 	
 preencheVetor:
 	
 	addi	$sp, $sp, -4
 	sw	$ra, 0($sp)
 	
-	la $t4, vetor	#carrega vetor
+	la $t3, vetor	#carrega vetor
 	li $t0, 0	#indice em hexa
-	li $t2, 0	#indice i
+	li $t1, 0	#indice i
 	
 	
 	li $v0, 4		#chamada para escrever no console
-	la $a0, str_dgt		#carrega a string para imprimir
+	la $a0, str_tamanho		#carrega a string para imprimir
 	syscall			# executa a chamada do SO para ler
 		
 		
@@ -33,19 +35,23 @@ preencheVetor:
 		
 	li $v0, 5		# código para ler um inteiro
 	syscall			# executa a chamada do SO para ler
-	la  $t1, 0($v0)		   # carrega o inteiro lido em $t7
+	la  $t2, 0($v0)		   # carrega o inteiro lido em $t7
 	
 carrega:
 
-	beq $t2, $t1, fimm
-	add $t3, $t4, $t0
+	beq $t1, $t2, fim
+	add $t4, $t3, $t0
 	
+	li $v0, 4		#chamada para escrever no console
+	la $a0, str_digite		#carrega a string para imprimir
+	syscall			# executa a chamada do SO para ler
+			
 	li $v0, 5
 	syscall
-	sw $v0, 0($t3)
+	sw $v0, 0($t4)
 	
 	addi $t0, $t0, 4
-	addi $t2, $t2, 1
+	addi $t1, $t1, 1
 	
 	j carrega
 		
