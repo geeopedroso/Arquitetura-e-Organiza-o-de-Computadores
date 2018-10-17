@@ -1,3 +1,10 @@
+//Decodificador em c
+// alunos:  Geovani Pedroso
+//			Vinicius Pétris 
+//			Lucas Gabriel da Silva
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -164,6 +171,10 @@ void decodificar(int ir) {
                     			printf("%s, ", registers[getRs(ir)]);
                     			printf("%s\n", registers[getRt(ir)]);
                     			break;
+					case 12 : //00 1100
+								printf("syscall \n");
+								break;
+
 
                 }
                 break;
